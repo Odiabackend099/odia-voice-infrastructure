@@ -1,0 +1,278 @@
+import React, { useState } from 'react';
+import { Play, Mic, Users, Globe } from 'lucide-react';
+
+const ODIANigerianTTS = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState('lexi');
+  const [customText, setCustomText] = useState('');
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [lastResponse, setLastResponse] = useState(null);
+
+  // Your TTS API endpoint (change this to your deployed URL)
+  const TTS_API_URL = 'http://localhost:8000';  // Change to your server URL
+
+  // ODIA Nigerian Agents
+  const agents = {
+    'lexi': {
+      name: 'Agent Lexi',
+      emoji: '💚',
+      personality: 'Friendly WhatsApp specialist',
+      color: 'bg-green-500',
+      sample: "Hello! I'm Lexi and I'm so excited to help your Nigerian business grow with WhatsApp automation!"
+    },
+    'miss': {
+      name: 'Agent MISS',
+      emoji: '🎓',
+      personality: 'University support assistant',
+      color: 'bg-blue-500',
+      sample: "Good day! I am Agent MISS, your academic assistant for Nigerian universities."
+    },
+    'atlas': {
+      name: 'Agent Atlas',
+      emoji: '✈️',
+      personality: 'Luxury travel specialist',
+      color: 'bg-purple-500',
+      sample: "Welcome! I'm Agent Atlas, your luxury travel specialist for premium African experiences."
+    },
+    'legal': {
+      name: 'Agent Miss Legal',
+      emoji: '⚖️',
+      personality: 'NDPR compliance specialist',
+      color: 'bg-gray-600',
+      sample: "I am Agent Miss Legal, ensuring your Nigerian business meets all regulatory requirements."
+    }
+  };
+
+  const createNigerianVoice = async (text, agent) => {
+    setIsLoading(true);
+    try {
+      console.log(`🎙️ Creating ${agent} voice...`);
+      
+      const response = await fetch(`${TTS_API_URL}/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: text,
+          agent: agent,
+          language: 'en'
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.audio_url) {
+        console.log('✅ Voice created!', result);
+        
+        // Get the audio file URL
+        const fullAudioUrl = result.audio_url.startsWith('http') 
+          ? result.audio_url 
+          : `${TTS_API_URL}${result.audio_url}`;
+        
+        setAudioUrl(fullAudioUrl);
+        setLastResponse(result);
+        
+        // Auto-play the audio
+        const audio = new Audio(fullAudioUrl);
+        audio.play().catch(e => console.log('Audio autoplay blocked:', e));
+        
+        return fullAudioUrl;
+      } else {
+        console.error('❌ Voice creation failed:', result);
+        return null;
+      }
+      
+    } catch (error) {
+      console.error('❌ Error calling TTS API:', error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAgentSpeak = (agent) => {
+    const agentData = agents[agent];
+    createNigerianVoice(agentData.sample, agent);
+  };
+
+  const handleCustomSpeak = () => {
+    if (customText.trim()) {
+      createNigerianVoice(customText, selectedAgent);
+    }
+  };
+
+  const playAudio = () => {
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play();
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          🇳🇬 ODIA Nigerian TTS API
+        </h1>
+        <p className="text-gray-600">
+          Authentic Nigerian voices for your applications
+        </p>
+        <div className="flex justify-center items-center gap-4 mt-4 text-sm text-gray-500">
+          <span className="flex items-center gap-1">
+            <Users className="w-4 h-4" />
+            4 Agents
+          </span>
+          <span className="flex items-center gap-1">
+            <Globe className="w-4 h-4" />
+            Nigerian Accent
+          </span>
+          <span className="flex items-center gap-1">
+            <Mic className="w-4 h-4" />
+            Production Ready
+          </span>
+        </div>
+      </div>
+
+      {/* Agent Buttons */}
+      <div className="grid md:grid-cols-2 gap-4 mb-8">
+        {Object.entries(agents).map(([agentId, agent]) => (
+          <div key={agentId} className="border rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="font-semibold text-gray-800">
+                  {agent.emoji} {agent.name}
+                </h3>
+                <p className="text-sm text-gray-600">{agent.personality}</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => handleAgentSpeak(agentId)}
+              disabled={isLoading}
+              className={`w-full ${agent.color} text-white px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity`}
+            >
+              {isLoading && selectedAgent === agentId ? (
+                <span>🎙️ Creating voice...</span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <Play className="w-4 h-4" />
+                  Hear {agent.name}
+                </span>
+              )}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Custom Text Input */}
+      <div className="bg-gray-50 rounded-lg p-6 mb-6">
+        <h3 className="font-semibold text-gray-800 mb-4">
+          Create Custom Nigerian Voice
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Choose Agent:
+            </label>
+            <select 
+              value={selectedAgent}
+              onChange={(e) => setSelectedAgent(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {Object.entries(agents).map(([agentId, agent]) => (
+                <option key={agentId} value={agentId}>
+                  {agent.emoji} {agent.name} - {agent.personality}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your Text (Max 2000 characters):
+            </label>
+            <textarea
+              value={customText}
+              onChange={(e) => setCustomText(e.target.value)}
+              placeholder="Enter text for your Nigerian agent to speak..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none"
+              maxLength={2000}
+            />
+            <div className="text-right text-sm text-gray-500 mt-1">
+              {customText.length}/2000
+            </div>
+          </div>
+
+          <button
+            onClick={handleCustomSpeak}
+            disabled={isLoading || !customText.trim()}
+            className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <span>🎙️ Creating Nigerian voice...</span>
+            ) : (
+              <>
+                <Mic className="w-5 h-5" />
+                Create Nigerian Voice
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Audio Player */}
+      {audioUrl && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-green-800 mb-3">
+            🎧 Your Nigerian Voice is Ready!
+          </h4>
+          
+          <div className="flex items-center gap-4">
+            <button
+              onClick={playAudio}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+            >
+              <Play className="w-4 h-4" />
+              Play Audio
+            </button>
+            
+            <audio controls className="flex-1">
+              <source src={audioUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+
+          {lastResponse && (
+            <div className="mt-3 text-sm text-green-700">
+              <p><strong>Agent:</strong> {agents[lastResponse.agent]?.name}</p>
+              <p><strong>Duration:</strong> {lastResponse.duration?.toFixed(2)}s</p>
+              <p><strong>Text Length:</strong> {lastResponse.text_length} characters</p>
+              {lastResponse.estimated_cost > 0 && (
+                <p><strong>Cost:</strong> ₦{lastResponse.estimated_cost?.toFixed(4)}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* API Information */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-800 mb-2">
+          📡 API Integration
+        </h4>
+        <p className="text-sm text-blue-700 mb-2">
+          Your TTS API is running at: <code className="bg-blue-100 px-2 py-1 rounded">{TTS_API_URL}</code>
+        </p>
+        <p className="text-sm text-blue-700">
+          Use the <code className="bg-blue-100 px-2 py-1 rounded">createNigerianVoice()</code> function 
+          in your Lovable app to add Nigerian voices to any component!
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default ODIANigerianTTS;

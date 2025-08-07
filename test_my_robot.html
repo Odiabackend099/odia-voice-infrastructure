@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><title>🧪 Test Your Nigerian Robot</title>
+<style>
+body{font-family:Arial;max-width:700px;margin:30px auto;padding:30px;background:#f0f8ff;}
+h1{color:#2e8b57;text-align:center;}
+button{background:#28a745;color:white;padding:20px 40px;border:none;border-radius:10px;font-size:18px;cursor:pointer;margin:15px;width:300px;}
+button:hover{background:#218838;}
+.result{margin:20px 0;padding:20px;border-radius:10px;border:2px solid #ddd;}
+.success{background:#d4edda;color:#155724;border-color:#c3e6cb;}
+.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}
+.info{background:#d1ecf1;color:#0c5460;border-color:#bee5eb;}
+audio{width:100%;margin:15px 0;}
+</style></head>
+<body>
+<h1>🧪 Test Your Nigerian Voice Robot</h1>
+<div style="text-align:center;">
+<button onclick="testRobot()">🔍 Is My Robot Alive?</button>
+<button onclick="testVoice()">🎙️ Make Nigerian Voice</button>
+</div>
+<div id="result"></div>
+<script>
+async function testRobot(){
+const r=document.getElementById('result');
+r.innerHTML='🔍 Checking if your robot is awake...';r.className='result info';
+try{
+const resp=await fetch('http://localhost:8001/');const data=await resp.json();
+r.className='result success';r.innerHTML='✅ YES! Your robot is ALIVE and ready! Message: '+data.message;
+}catch(e){r.className='result error';r.innerHTML='❌ Robot is sleeping. Make sure the black "Nigerian Voice Robot" window is open. Error: '+e.message;}}
+async function testVoice(){
+const r=document.getElementById('result');
+r.innerHTML='🎙️ Creating your Nigerian voice... (wait 10-20 seconds)';r.className='result info';
+try{
+const resp=await fetch('http://localhost:8001/speak',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({text:'Hello! I am your Nigerian AI robot! Welcome to ODIA Voice Technology! This is amazing!',agent:'lexi'})});
+const data=await resp.json();
+if(data.success){r.className='result success';
+r.innerHTML='✅ SUCCESS! Your Nigerian voice is ready! <br><audio controls><source src="http://localhost:8001'+data.download_url+'" type="audio/mpeg"></audio>';
+}else{throw new Error(data.message);}
+}catch(e){r.className='result error';r.innerHTML='❌ Voice creation failed: '+e.message+'. Make sure robot test passed first!';}}
+</script></body></html>

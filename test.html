@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇳🇬 Nigerian Voice Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #00b300, #ffffff);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #00b300;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status.checking {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .agent-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .agent-card:hover {
+            border-color: #00b300;
+            box-shadow: 0 5px 15px rgba(0,179,0,0.2);
+        }
+        
+        .agent-card h3 {
+            color: #00b300;
+            margin: 10px 0;
+        }
+        
+        .agent-card p {
+            color: #666;
+            margin: 15px 0;
+        }
+        
+        .test-btn {
+            background: #00b300;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #008800;
+        }
+        
+        .test-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .custom-test {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .custom-test h3 {
+            color: #00b300;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        
+        .audio-player {
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .results {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .emoji {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇳🇬 Nigerian Voice Test</h1>
+        <p class="subtitle">Test your Nigerian TTS system before filling in the API keys!</p>
+        
+        <div class="instructions">
+            <h3>📋 Before You Start:</h3>
+            <ol>
+                <li>Make sure you ran: <code>python nigerian_voice_robot.py</code></li>
+                <li>Your robot should be running at: <code>http://localhost:8000</code></li>
+                <li>If not, go back to the Python instructions first!</li>
+            </ol>
+        </div>
+        
+        <div id="status" class="status checking">
+            🔍 Checking if your Nigerian voice robot is alive...
+        </div>
+        
+        <div class="agent-grid">
+            <div class="agent-card">
+                <div class="emoji">💚</div>
+                <h3>Agent Lexi</h3>
+                <p>WhatsApp business helper<br>Friendly & excited</p>
+                <button class="test-btn" onclick="testAgent('lexi')" id="btn-lexi">
+                    🎙️ Test Lexi's Voice
+                </button>
+                <div id="result-lexi"></div>
+            </div>
+            
+            <div class="agent-card">
+                <div class="emoji">🎓</div>
+                <h3>Agent MISS</h3>
+                <p>University support<br>Professional & smart</p>
+                <button class="test-btn" onclick="testAgent('miss')" id="btn-miss">
+                    🎙️ Test MISS's Voice
+                </button>
+                <div id="result-miss"></div>
+            </div>
+            
+            <div class="agent-card">
+                <div class="emoji">✈️</div>
+                <h3>Agent Atlas</h3>
+                <p>Luxury travel expert<br>Calm & sophisticated</p>
+                <button class="test-btn" onclick="testAgent('atlas')" id="btn-atlas">
+                    🎙️ Test Atlas's Voice
+                </button>
+                <div id="result-atlas"></div>
+            </div>
+            
+            <div class="agent-card">
+                <div class="emoji">⚖️</div>
+                <h3>Agent Miss Legal</h3>
+                <p>Legal compliance<br>Serious & precise</p>
+                <button class="test-btn" onclick="testAgent('legal')" id="btn-legal">
+                    🎙️ Test Legal's Voice
+                </button>
+                <div id="result-legal"></div>
+            </div>
+        </div>
+        
+        <div class="custom-test">
+            <h3>🎯 Create Custom Nigerian Voice</h3>
+            <textarea id="customText" placeholder="Type what you want your Nigerian agent to say... (e.g., 'Welcome to my business! We provide excellent service to all Nigerian customers!')"></textarea>
+            
+            <select id="agentSelect">
+                <option value="lexi">Agent Lexi (Friendly Business)</option>
+                <option value="miss">Agent MISS (Academic)</option>
+                <option value="atlas">Agent Atlas (Professional)</option>
+                <option value="legal">Agent Legal (Formal)</option>
+            </select>
+            
+            <button class="test-btn" onclick="createCustomVoice()">
+                🎙️ Create My Nigerian Voice
+            </button>
+            
+            <div id="customResult"></div>
+        </div>
+        
+        <div class="instructions">
+            <h3>✅ If Everything Works:</h3>
+            <p><strong>Fill in your API dialog with:</strong></p>
+            <ul>
+                <li><strong>Nigerian TTS Base URL:</strong> <code>http://localhost:8000</code></li>
+                <li><strong>Nigerian TTS API Key:</strong> <code>test-key-not-needed</code></li>
+            </ul>
+            <p><em>Later you can deploy this to the internet and get real API keys!</em></p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Check if robot is alive
+        async function checkRobotStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/`);
+                const data = await response.json();
+                
+                document.getElementById('status').className = 'status success';
+                document.getElementById('status').innerHTML = '✅ Your Nigerian voice robot is ALIVE and ready!';
+                
+                // Enable all buttons
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+            } catch (error) {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').innerHTML = '❌ Your robot is not running! Please start it first with: python nigerian_voice_robot.py';
+                
+                // Disable all buttons
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+            }
+        }
+        
+        // Test specific agent
+        async function testAgent(agentName) {
+            const button = document.getElementById(`btn-${agentName}`);
+            const result = document.getElementById(`result-${agentName}`);
+            
+            button.disabled = true;
+            button.innerHTML = '🎙️ Creating voice...';
+            result.innerHTML = '<div style="color: #666;">Creating Nigerian voice...</div>';
+            
+            try {
+                // Test voices for each agent
+                const testTexts = {
+                    'lexi': 'Hello! I am Agent Lexi from ODIA AI Nigeria! I help businesses grow with WhatsApp automation!',
+                    'miss': 'Good day! I am Agent MISS, your Nigerian university assistant. How may I help you today?',
+                    'atlas': 'Welcome! I am Agent Atlas, your luxury travel specialist for premium African experiences.',
+                    'legal': 'I am Agent Miss Legal, ensuring your Nigerian business meets all compliance requirements.'
+                };
+                
+                const response = await fetch(`${API_BASE}/speak`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: testTexts[agentName],
+                        agent: agentName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div style="color: green; margin: 10px 0;">✅ Voice created!</div>
+                        <audio controls class="audio-player">
+                            <source src="${API_BASE}${data.download_url}" type="audio/mpeg">
+                            Your browser does not support audio.
+                        </audio>
+                    `;
+                } else {
+                    throw new Error(data.message || 'Voice creation failed');
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div style="color: red;">❌ Error: ${error.message}</div>`;
+            }
+            
+            button.disabled = false;
+            button.innerHTML = '🎙️ Test Again';
+        }
+        
+        // Create custom voice
+        async function createCustomVoice() {
+            const text = document.getElementById('customText').value.trim();
+            const agent = document.getElementById('agentSelect').value;
+            const result = document.getElementById('customResult');
+            
+            if (!text) {
+                alert('Please type some text first!');
+                return;
+            }
+            
+            result.innerHTML = '<div style="color: #666;">Creating your custom Nigerian voice...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/speak`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        agent: agent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div style="color: green; margin: 15px 0;">✅ Your custom Nigerian voice is ready!</div>
+                        <audio controls class="audio-player">
+                            <source src="${API_BASE}${data.download_url}" type="audio/mpeg">
+                            Your browser does not support audio.
+                        </audio>
+                        <div style="color: #666; font-size: 14px; margin-top: 10px;">
+                            Agent: ${agent} | Length: ${text.length} characters
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message || 'Voice creation failed');
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div style="color: red;">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Check status when page loads
+        window.addEventListener('load', () => {
+            setTimeout(checkRobotStatus, 1000);
+        });
+    </script>
+</body>
+</html>
